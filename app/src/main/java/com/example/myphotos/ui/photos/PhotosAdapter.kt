@@ -5,17 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myphotos.R
 import com.example.myphotos.addImageIntoView
 import com.example.myphotos.entity.MyPhoto
 
-class PhotosAdapter : RecyclerView.Adapter<PhotoItemViewHolder>() {
-    var photos = listOf<MyPhoto>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+class PhotosAdapter : PagingDataAdapter<MyPhoto, PhotoItemViewHolder>(ARTICLE_DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoItemViewHolder {
         val view =
@@ -24,13 +21,21 @@ class PhotosAdapter : RecyclerView.Adapter<PhotoItemViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: PhotoItemViewHolder, position: Int) {
-        val item = photos[position]
-        holder.authorName.text = item.author
-        addImageIntoView(holder.photoImage, item.downloadUrl)
+        val item = getItem(position)
+        item?.let {
+            holder.authorName.text = item.author
+            addImageIntoView(holder.photoImage, item.downloadUrl)
+        }
     }
 
-    override fun getItemCount(): Int {
-        return photos.size
+    companion object {
+        private val ARTICLE_DIFF_CALLBACK = object : DiffUtil.ItemCallback<MyPhoto>() {
+            override fun areItemsTheSame(oldItem: MyPhoto, newItem: MyPhoto): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: MyPhoto, newItem: MyPhoto): Boolean =
+                oldItem == newItem
+        }
     }
 }
 

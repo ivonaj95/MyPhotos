@@ -1,15 +1,18 @@
 package com.example.myphotos.ui.photos
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myphotos.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PhotosFragment : Fragment() {
@@ -31,9 +34,9 @@ class PhotosFragment : Fragment() {
         viewModel = ViewModelProvider(this)[PhotosModel::class.java]
         recyclerView = view.findViewById(R.id.photos_list)
 
-        viewModel.photos.observe(viewLifecycleOwner, Observer { newPhotos ->
-            newPhotos?.let {
-                adapter.photos = newPhotos
+        viewModel.pagePhotos.observe(viewLifecycleOwner, Observer { newPagePhotos ->
+            lifecycleScope.launch {
+                adapter.submitData(newPagePhotos)
             }
         })
 
