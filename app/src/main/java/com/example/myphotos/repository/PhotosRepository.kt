@@ -2,6 +2,7 @@ package com.example.myphotos.repository
 
 import androidx.lifecycle.LiveData
 import androidx.paging.*
+import com.example.myphotos.GRID_SIZE
 import com.example.myphotos.api.ApiService
 import com.example.myphotos.entity.MyPhoto
 import com.example.myphotos.paging.PhotosPagingSource
@@ -18,6 +19,6 @@ class PhotosRepository(
     }
 
     companion object {
-        const val PAGE_SIZE = 10
+        const val PAGE_SIZE = 2 * GRID_SIZE
     }
 }

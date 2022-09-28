@@ -21,7 +21,7 @@ class PhotosPagingSource(private val apiService: ApiService) : PagingSource<Int,
         val page = params.key ?: STARTING_PAGE
         return try {
             Log.d("IVONA", "page {$page} size {${params.loadSize}}")
-            delay(5000) // for testing
+            delay(1000) // for testing
             val response = apiService.getPhotos(page, params.loadSize)
             Log.d("IVONA", "page Loaded {$page} size {${params.loadSize}}")
             LoadResult.Page(

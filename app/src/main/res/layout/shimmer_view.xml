@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
     android:id="@+id/shimmerFooterLayout"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:animationCache="true"
     android:visibility="visible"
     app:shimmer_repeat_mode="restart"
-    app:shimmer_shape="radial">
+    app:shimmer_shape="linear">
 
     <LinearLayout
         android:layout_width="match_parent"

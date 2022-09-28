@@ -6,12 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myphotos.GRID_SIZE
 import com.example.myphotos.R
 import com.example.myphotos.ui.shimmer.FooterAdapter
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -39,7 +42,22 @@ class PhotosFragment : Fragment() {
         viewModel = ViewModelProvider(this)[PhotosModel::class.java]
         recyclerView = view.findViewById(R.id.photos_list)
         shimmerLayout = view.findViewById(R.id.shimmerLayout)
-        val adapterWithLoading = adapter.withLoadStateFooter(FooterAdapter())
+
+        val footerAdapter = FooterAdapter()
+        val adapterWithLoading = adapter.withLoadStateFooter(footerAdapter)
+
+        val gridLayoutManager = GridLayoutManager(recyclerView.context, GRID_SIZE)
+        recyclerView.layoutManager = gridLayoutManager
+
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position == adapter.itemCount && footerAdapter.itemCount > 0) {
+                    GRID_SIZE
+                } else {
+                    1
+                }
+            }
+        }
         adapter.addLoadStateListener { states ->
             when (states.source.refresh) {
                 is LoadState.Loading -> {
@@ -48,14 +66,16 @@ class PhotosFragment : Fragment() {
                     Log.d("IVONA", "loading....")
                 }
                 is LoadState.NotLoading -> {
-                    shimmerLayout.stopShimmer()
-                    shimmerLayout.visibility = View.GONE
-                    Log.d("IVONA", "notLoading....")
+                    if (shimmerLayout.isVisible) {
+                        shimmerLayout.stopShimmer()
+                        shimmerLayout.visibility = View.GONE
+                        Log.d("IVONA", "notLoading....")
+                    }
 
                 }
                 is LoadState.Error -> {
                     Log.d("IVONA", "error....")
-
+                    shimmerLayout.stopShimmer()
                 }
             }
         }
