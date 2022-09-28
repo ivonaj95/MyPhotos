@@ -9,8 +9,12 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
+import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myphotos.R
+import com.example.myphotos.ui.shimmer.FooterAdapter
+import com.facebook.shimmer.ShimmerFrameLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -24,6 +28,7 @@ class PhotosFragment : Fragment() {
     private lateinit var viewModel: PhotosModel
     private lateinit var recyclerView: RecyclerView
     private var adapter = PhotosAdapter()
+    private lateinit var shimmerLayout: ShimmerFrameLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,14 +38,35 @@ class PhotosFragment : Fragment() {
 
         viewModel = ViewModelProvider(this)[PhotosModel::class.java]
         recyclerView = view.findViewById(R.id.photos_list)
+        shimmerLayout = view.findViewById(R.id.shimmerLayout)
+        val adapterWithLoading = adapter.withLoadStateFooter(FooterAdapter())
+        adapter.addLoadStateListener { states ->
+            when (states.source.refresh) {
+                is LoadState.Loading -> {
+                    shimmerLayout.startShimmer()
+                    shimmerLayout.visibility = View.VISIBLE
+                    Log.d("IVONA", "loading....")
+                }
+                is LoadState.NotLoading -> {
+                    shimmerLayout.stopShimmer()
+                    shimmerLayout.visibility = View.GONE
+                    Log.d("IVONA", "notLoading....")
 
+                }
+                is LoadState.Error -> {
+                    Log.d("IVONA", "error....")
+
+                }
+            }
+        }
         viewModel.pagePhotos.observe(viewLifecycleOwner, Observer { newPagePhotos ->
             lifecycleScope.launch {
+
                 adapter.submitData(newPagePhotos)
             }
         })
 
-        recyclerView.adapter = adapter
+        recyclerView.adapter = adapterWithLoading
 
         return view
     }

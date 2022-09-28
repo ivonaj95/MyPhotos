@@ -6,7 +6,6 @@ import androidx.paging.PagingState
 import com.example.myphotos.api.ApiService
 import com.example.myphotos.entity.MyPhoto
 import kotlinx.coroutines.delay
-import kotlin.math.max
 
 private const val STARTING_PAGE = 1
 
