@@ -41,7 +41,7 @@ class PhotosFragment : Fragment() {
 
         viewModel = ViewModelProvider(this)[PhotosModel::class.java]
         recyclerView = view.findViewById(R.id.photos_list)
-        shimmerLayout = view.findViewById(R.id.shimmerLayout)
+        shimmerLayout = view.findViewById(R.id.shimmerFooterLayout)
 
         val footerAdapter = FooterAdapter()
         val adapterWithLoading = adapter.withLoadStateFooter(footerAdapter)
